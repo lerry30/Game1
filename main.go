@@ -1,0 +1,102 @@
+package main
+
+import (
+	"image/color"
+	"log"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
+
+type Game struct {
+	player    *Player
+	gMap      *Map
+	camera    *Camera
+	colliders Colliders
+}
+
+func (g *Game) Update() error {
+	g.player.ControlX(float64(g.gMap.tileMap.Layers[0].Width) * 16.0)
+	g.colliders.CheckCollisionX(&g.player.Sprite)
+	g.player.ControlY(float64(g.gMap.tileMap.Layers[0].Height) * 16.0)
+	g.colliders.CheckCollisionY(&g.player.Sprite)
+
+	screenWidth := 320
+	screenHeight := 240
+
+	g.camera.FollowTarget(g.player.X+8, g.player.Y+8, screenWidth, screenHeight)
+	g.camera.Constraint(
+		float64(g.gMap.tileMap.Layers[0].Width)*16.0,
+		float64(g.gMap.tileMap.Layers[0].Height)*16.0,
+		screenWidth,
+		screenHeight,
+	)
+
+	return nil
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	screen.Fill(color.RGBA{100, 100, 100, 255})
+
+	opts := ebiten.DrawImageOptions{}
+	drawOpts := DrawOption{
+		opts:   &opts,
+		camera: g.camera,
+	}
+
+	// Draw Map
+	g.gMap.RenderMap(screen, &drawOpts)
+
+	opts.GeoM.Reset()
+
+	// Draw Player
+	g.player.Draw(screen, &drawOpts)
+
+	// Draw Colliders Debug
+	//g.colliders.DrawDebugCollider(screen, g.camera.X, g.camera.Y)
+}
+
+func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	//return ebiten.WindowSize()
+	return 320, 240
+}
+
+func main() {
+	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowTitle("Hello, World!")
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+
+	// player
+	player, err := NewPlayer("assets/images/ninja.png", 100.0, 100.0)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// layers(Map and buildings)
+	gMap, err := NewMap("assets/maps/spawn.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Camera
+	camera := NewCamera(0, 0)
+
+	// Collider
+	colliders := NewColliders()
+
+	// Create obstacles
+	buildingCoord := gMap.BuildingsCoords()
+	for _, coord := range buildingCoord {
+		colliders.AddNewCollider(coord)
+	}
+
+	game := Game{
+		player:    player,
+		gMap:      gMap,
+		camera:    camera,
+		colliders: colliders,
+	}
+
+	if err := ebiten.RunGame(&game); err != nil {
+		log.Fatal(err)
+	}
+}
