@@ -24,10 +24,10 @@ func NewPlayer(filepath string, x, y float64) (*Player, error) {
 	spriteSheetImgHeight := 112
 	playerSpriteSheet := spritesheet.NewSpriteSheet(spriteSheetImgWidth, spriteSheetImgHeight, constants.TileSize)
 	playerAnimation := map[AnimationState]*animations.Animation{
-		Up:    animations.NewAnimation(5, 13, 4, 10.0),
-		Down:  animations.NewAnimation(4, 12, 4, 10.0),
-		Left:  animations.NewAnimation(6, 14, 4, 10.0),
-		Right: animations.NewAnimation(7, 15, 4, 10.0),
+		Up:    animations.NewAnimation(5, 13, 4, 6.0),
+		Down:  animations.NewAnimation(4, 12, 4, 6.0),
+		Left:  animations.NewAnimation(6, 14, 4, 6.0),
+		Right: animations.NewAnimation(7, 15, 4, 6.0),
 	}
 
 	err := player.NewSprite(filepath, x, y, playerSpriteSheet, playerAnimation)

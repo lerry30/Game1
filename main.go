@@ -9,6 +9,7 @@ import (
 
 type Game struct {
 	player    *Player
+	enemy     *Enemy
 	gMap      *Map
 	camera    *Camera
 	colliders Colliders
@@ -20,9 +21,19 @@ func (g *Game) Update() error {
 	g.player.ControlY(float64(g.gMap.tileMap.Layers[0].Height) * 16.0)
 	g.colliders.CheckCollisionY(&g.player.Sprite)
 
-	activeAnim := g.player.Sprite.ActiveAnimation()
-	if activeAnim != nil {
-		activeAnim.Update()
+	playerAnim := g.player.Sprite.ActiveAnimation()
+	if playerAnim != nil {
+		playerAnim.Update()
+	}
+
+	g.enemy.MoveX(float64(g.gMap.tileMap.Layers[0].Width) * 16.0)
+	g.colliders.CheckCollisionX(&g.enemy.Sprite)
+	g.enemy.MoveY(float64(g.gMap.tileMap.Layers[0].Height) * 16.0)
+	g.colliders.CheckCollisionY(&g.enemy.Sprite)
+
+	enemyAnim := g.enemy.Sprite.ActiveAnimation()
+	if enemyAnim != nil {
+		enemyAnim.Update()
 	}
 
 	screenWidth := 320
@@ -56,6 +67,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Draw Player
 	g.player.Draw(screen, &drawOpts)
 
+	// Draw Enemy
+	g.enemy.Draw(screen, &drawOpts)
+
 	// Draw Colliders Debug
 	//g.colliders.DrawDebugCollider(screen, g.camera.X, g.camera.Y)
 }
@@ -75,6 +89,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// enemy
+	enemy, err := NewEnemy("assets/images/skeleton.png", 600.0, 200.0)
+	if err != nil {
+		log.Fatal(err)
+	}
+	enemy.SetTarget(&player.Sprite)
 
 	// layers(Map and buildings)
 	gMap, err := NewMap("assets/maps/spawn.json")
@@ -96,6 +117,7 @@ func main() {
 
 	game := Game{
 		player:    player,
+		enemy:     enemy,
 		gMap:      gMap,
 		camera:    camera,
 		colliders: colliders,
