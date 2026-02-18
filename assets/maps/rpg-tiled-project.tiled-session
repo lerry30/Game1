@@ -3,18 +3,18 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "tilesets/buildings.json",
+    "activeFile": "tilesets/TilesetFloor.json",
     "expandedProjectPaths": [
-        "tilesets",
-        "."
+        ".",
+        "tilesets"
     ],
     "fileStates": {
         "spawn.json": {
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 441.75,
-                "y": 321.5
+                "x": 800.25,
+                "y": 640
             }
         },
         "spawn.tmj": {
@@ -68,9 +68,9 @@
     ],
     "project": "rpg-tiled-project.tiled-project",
     "recentFiles": [
-        "tilesets/TilesetFloor.json",
         "spawn.json",
         "tilesets/buildings.json",
+        "tilesets/TilesetFloor.json",
         "spawn1.json",
         "tilesets/TilesetFloor.tsj",
         "spawn.tmj",

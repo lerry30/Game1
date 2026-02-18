@@ -20,6 +20,11 @@ func (g *Game) Update() error {
 	g.player.ControlY(float64(g.gMap.tileMap.Layers[0].Height) * 16.0)
 	g.colliders.CheckCollisionY(&g.player.Sprite)
 
+	activeAnim := g.player.Sprite.ActiveAnimation()
+	if activeAnim != nil {
+		activeAnim.Update()
+	}
+
 	screenWidth := 320
 	screenHeight := 240
 

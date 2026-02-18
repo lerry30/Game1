@@ -5,21 +5,38 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+
+	"game1/animations"
+	"game1/constants"
+	"game1/spritesheet"
 )
 
 type Player struct {
 	Sprite
-	Speed float64
+	Speed     float64
+	Animation map[AnimationState]*animations.Animation
 }
 
 func NewPlayer(filepath string, x, y float64) (*Player, error) {
 	player := Player{}
-	err := player.NewSprite(filepath, x, y)
+
+	spriteSheetImgWidth := 64
+	spriteSheetImgHeight := 112
+	playerSpriteSheet := spritesheet.NewSpriteSheet(spriteSheetImgWidth, spriteSheetImgHeight, constants.TileSize)
+	playerAnimation := map[AnimationState]*animations.Animation{
+		Up:    animations.NewAnimation(5, 13, 4, 10.0),
+		Down:  animations.NewAnimation(4, 12, 4, 10.0),
+		Left:  animations.NewAnimation(6, 14, 4, 10.0),
+		Right: animations.NewAnimation(7, 15, 4, 10.0),
+	}
+
+	err := player.NewSprite(filepath, x, y, playerSpriteSheet, playerAnimation)
 	if err != nil {
 		return &Player{}, fmt.Errorf("Unable to create player at player.go %w", err)
 	}
 
 	player.Speed = 2
+	player.Animation = playerAnimation
 
 	return &player, nil
 }
