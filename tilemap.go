@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
 )
 
 // It will just get the data from the json file to populate these structs
@@ -35,7 +34,7 @@ func NewTileMap(filepath string) (*TileMap, error) {
 }
 
 func (tm *TileMap) Load(file string) error {
-	data, err := os.ReadFile(file)
+	data, err := assets.ReadFile(file)
 	if err != nil {
 		return fmt.Errorf("Reading file error: %s - %w", file, err)
 	}

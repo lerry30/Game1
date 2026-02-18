@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image"
-	"os"
+	"io/fs"
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -39,7 +39,7 @@ func (t *TileSetFloor) Img(id int) *ebiten.Image {
 
 func (t *TileSetFloor) GetImageObject(path string) error {
 	// 1. Extract the image path in the tileset json file
-	data, err := os.ReadFile(path)
+	data, err := fs.ReadFile(gameFs, path)
 	if err != nil {
 		return fmt.Errorf("Failed to read file(%s): %w", path, err)
 	}

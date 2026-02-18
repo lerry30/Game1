@@ -1,11 +1,18 @@
 package main
 
 import (
+	"embed"
 	"image/color"
+	"io/fs"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+
+	"game1/layers"
 )
+
+//go:embed assets
+var assets embed.FS
 
 type Game struct {
 	player    *Player
@@ -83,6 +90,11 @@ func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+
+	// initialize
+	// Pass the whole FS or a sub FS to each package
+	subFS, _ := fs.Sub(assets, "assets")
+	layers.Init(subFS)
 
 	// player
 	player, err := NewPlayer("assets/images/ninja.png", 100.0, 100.0)

@@ -24,7 +24,8 @@ func NewMap(jsonPath string) (*Map, error) {
 
 	tileDataLayers := make([]layers.Layer, 0)
 	for _, tileset := range tileMap.TileSet {
-		tilesetPath := path.Join("assets/maps", tileset.Source)
+		//tilesetPath := path.Join("assets/maps", tileset.Source)
+		tilesetPath := path.Join("maps", tileset.Source)
 		layer, err := layers.GetLayer(tilesetPath, tileset.GID)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to get layers at map.go: %w", err)
