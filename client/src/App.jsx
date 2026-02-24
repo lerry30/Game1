@@ -1,34 +1,45 @@
 import { useEffect, useRef } from 'react';
 
 function App() {
-  const goRef = useRef(null);
-  const loadedRef = useRef(false)
+	const goRef = useRef(null);
+	const loadedRef = useRef(false)
 
-  useEffect(() => {
-	if(loadedRef.current) return;
-	loadedRef.current = true;
+	const loadWasm = async () => {
+		const urlWasmEndPoint = "http://localhost:8080/game/game1/game1.wasm";
+		try {
+			const go = new Go();
 
-    const go = new Go();
-    goRef.current = go;
+			const res = await fetch(urlWasmEndPoint);
+			const bytes = await res.arrayBuffer();
+			if(!res.ok) {
+				const message = bytes?.message || 'No response';
+        		throw new Error(message, {cause: {response: res, bytes}});
+			}
 
-    fetch("http://localhost:8080/game/game1/game1.wasm")
-      .then(res => {
-        if (!res.ok) throw new Error(`Failed to fetch wasm: ${res.status}`);
-        return res.arrayBuffer();
-      })
-      .then(bytes => WebAssembly.instantiate(bytes, go.importObject))
-      .then(({ instance }) => {
-        go.run(instance);
-      })
-      .catch(err => console.error("WASM load error:", err));
+			const webAsm = await WebAssembly.instantiate(bytes, go.importObject);
+			go.run(webAsm?.instance);
 
-    // Cleanup if component unmounts
-    return () => {
-      goRef.current?.exit?.(0);
-    };
-  }, []);
+			return go;
+		} catch(error) {
+			console.log(error?.message || error);
+			return null
+		}
+	}
 
-  return null;
+	useEffect(() => {
+		if (loadedRef.current) return;
+		loadedRef.current = true;
+
+		const go = loadWasm()
+		goRef.current = go;
+
+		// Cleanup if component unmounts
+		return () => {
+			goRef.current?.exit?.(0);
+		};
+	}, []);
+
+	return null;
 }
 
 export default App;
